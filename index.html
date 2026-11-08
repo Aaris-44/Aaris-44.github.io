@@ -14,7 +14,7 @@
 <meta name="description" content="Aaris Amirza, design educator at Management and Science University, Malaysia. Creative thinking, responsible AI and digital heritage in art and design education.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,600;0,800;0,900;1,600;1,800;1,900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,600;1,700;1,800&family=DM+Mono:wght@400;500&display=swap">
 <style>
 /* Palette: Cloud Dancer ground, Darkest Hour ink, Blue Violet as primary, Exuberant Orange and Sun Glare as accents. Soft colour aura behind frosted glass panels. */
 /* Layout: one narrow reading column, like a contact sheet. Profile first, then the two interactive blocks, then the record. */
@@ -35,6 +35,10 @@
   --on-lime: #1F1D1E;
   --chip-on-bg: #1F1D1E;
   --chip-on-fg: #D8F44F;
+  --lg-a: rgba(255, 255, 255, 0.62);
+  --lg-b: rgba(255, 255, 255, 0.22);
+  --lg-edge: rgba(255, 255, 255, 0.85);
+  --lg-sheen: rgba(255, 255, 255, 0.45);
   --night: #1F1D1E;
   --frame-empty: rgba(31, 29, 30, 0.07);
   --frame-dev: #6257B9;
@@ -42,10 +46,10 @@
   --aura-2: rgba(226, 96, 58, 0.20);
   --aura-3: rgba(216, 244, 79, 0.26);
 
-  --display: "Schibsted Grotesk", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --display: "Plus Jakarta Sans", "Helvetica Neue", Arial, system-ui, sans-serif;
   --glow-text: linear-gradient(100deg, #5148A8 0%, #6257B9 45%, #B0567F 80%, #D4603F 100%);
-  --body: "IBM Plex Sans", "Helvetica Neue", Arial, system-ui, sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --body: "Plus Jakarta Sans", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 
   --step--1: 0.8125rem;
   --step-0: 1rem;
@@ -59,7 +63,7 @@
     --paper: #141314; --surface: rgba(255, 255, 255, 0.06); --glass-line: rgba(255, 255, 255, 0.12);
     --ink: #F1EFEA; --ink-soft: #B4B0B9; --line: rgba(255, 255, 255, 0.12);
     --navy: #7166D1; --navy-deep: #3B3187; --on-navy: #FFFFFF; --cuff: #B9B1F5; --cuff-tint: rgba(113, 102, 209, 0.22);
-    --amber: #F07A55; --lime: #D8F44F; --on-lime: #1F1D1E; --chip-on-bg: #D8F44F; --chip-on-fg: #1F1D1E; --night: #0B0A0B;
+    --amber: #F07A55; --lime: #D8F44F; --on-lime: #1F1D1E; --chip-on-bg: #D8F44F; --chip-on-fg: #1F1D1E; --lg-a: rgba(255, 255, 255, 0.10); --lg-b: rgba(255, 255, 255, 0.03); --lg-edge: rgba(255, 255, 255, 0.20); --lg-sheen: rgba(255, 255, 255, 0.07); --night: #0B0A0B;
     --frame-empty: rgba(255, 255, 255, 0.07); --frame-dev: #9D93EE;
     --aura-1: rgba(98, 87, 185, 0.30); --aura-2: rgba(226, 96, 58, 0.14); --aura-3: rgba(216, 244, 79, 0.10); --glow-text: linear-gradient(100deg, #9A90F2 0%, #8A7FE6 45%, #D88AA6 80%, #F08A66 100%); color-scheme: dark;
   }
@@ -68,7 +72,7 @@
   --paper: #141314; --surface: rgba(255, 255, 255, 0.06); --glass-line: rgba(255, 255, 255, 0.12);
     --ink: #F1EFEA; --ink-soft: #B4B0B9; --line: rgba(255, 255, 255, 0.12);
     --navy: #7166D1; --navy-deep: #3B3187; --on-navy: #FFFFFF; --cuff: #B9B1F5; --cuff-tint: rgba(113, 102, 209, 0.22);
-    --amber: #F07A55; --lime: #D8F44F; --on-lime: #1F1D1E; --chip-on-bg: #D8F44F; --chip-on-fg: #1F1D1E; --night: #0B0A0B;
+    --amber: #F07A55; --lime: #D8F44F; --on-lime: #1F1D1E; --chip-on-bg: #D8F44F; --chip-on-fg: #1F1D1E; --lg-a: rgba(255, 255, 255, 0.10); --lg-b: rgba(255, 255, 255, 0.03); --lg-edge: rgba(255, 255, 255, 0.20); --lg-sheen: rgba(255, 255, 255, 0.07); --night: #0B0A0B;
     --frame-empty: rgba(255, 255, 255, 0.07); --frame-dev: #9D93EE;
     --aura-1: rgba(98, 87, 185, 0.30); --aura-2: rgba(226, 96, 58, 0.14); --aura-3: rgba(216, 244, 79, 0.10); --glow-text: linear-gradient(100deg, #9A90F2 0%, #8A7FE6 45%, #D88AA6 80%, #F08A66 100%); color-scheme: dark;
 }
@@ -291,9 +295,40 @@ footer .wrap { padding-block: 28px 40px; font-size: var(--step--1); color: var(-
 .to-top svg { width: 16px; height: 16px; }
 .to-top.show { opacity: 1; transform: none; pointer-events: auto; }
 .to-top.show.moving { opacity: 0; transform: translateY(6px) scale(0.96); pointer-events: none; transition-duration: 160ms; }
-.bridge { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 12px; align-items: start; padding: 16px; border-radius: 14px; background: var(--cuff-tint); border: 1px solid var(--glass-line); }
-.bridge svg { width: 22px; height: 22px; color: var(--navy); margin-top: 2px; }
-.bridge p { font-size: var(--step--1); line-height: 1.6; color: var(--ink); }
+.bridge { position: relative; display: grid; gap: 10px; padding: 22px 0 6px; margin-top: 6px; }
+.bridge::before { content: ""; position: absolute; top: 0; left: 0; width: 72px; height: 3px; border-radius: 3px; background: linear-gradient(90deg, var(--navy), var(--amber)); }
+.bridge-kicker { font-size: var(--step--1); font-weight: 600; color: var(--amber); letter-spacing: 0.02em; }
+.bridge-lead { font-family: var(--display); font-weight: 700; font-size: clamp(1.2rem, 4.6vw, 1.5rem); line-height: 1.25; letter-spacing: -0.015em; color: var(--ink); text-wrap: balance; }
+.bridge-body { font-size: var(--step--1); line-height: 1.6; color: var(--ink-soft); max-width: 40em; }
+.bridge-tags { list-style: none; margin: 2px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.bridge-tags li { font-size: var(--step--1); font-weight: 500; color: var(--ink); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--glass-line); background: var(--surface); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.more-label { font-size: var(--step--1); font-weight: 600; color: var(--ink); margin-top: 8px; }
+.profiles .profile { gap: 8px; color: var(--ink); background: color-mix(in srgb, var(--pc) 14%, var(--surface)); border-color: color-mix(in srgb, var(--pc) 45%, transparent); transition: background-color 140ms ease, transform 140ms ease; }
+.profiles .profile::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--pc); flex: none; }
+.profiles .profile:hover { background: color-mix(in srgb, var(--pc) 26%, var(--surface)); transform: translateY(-1px); }
+.offer .subjects { font-size: 0.75rem; color: var(--ink-soft); opacity: 0.85; letter-spacing: 0.01em; }
+.offer .subjects span { color: var(--amber); padding-inline: 2px; }
+.award-wrap { position: relative; isolation: isolate; }
+.award-wrap::before { content: ""; position: absolute; z-index: -1; inset: 8% 6% -6% 18%; border-radius: 40%; background: radial-gradient(60% 70% at 20% 40%, rgba(232, 182, 72, 0.55), transparent 70%), radial-gradient(60% 70% at 85% 60%, var(--aura-1), transparent 70%); filter: blur(26px); pointer-events: none; }
+.award { position: relative; display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 14px; align-items: start; padding: 18px; border-radius: 24px; background: linear-gradient(140deg, var(--lg-a), var(--lg-b)); border: 1px solid var(--lg-edge); backdrop-filter: blur(26px) saturate(180%); -webkit-backdrop-filter: blur(26px) saturate(180%); box-shadow: inset 0 1px 0 var(--lg-edge), inset 0 -1px 1px rgba(255, 255, 255, 0.08), 0 20px 44px -24px rgba(31, 29, 30, 0.45); overflow: hidden; }
+.award > * { position: relative; z-index: 1; }
+.award::after { z-index: 0; content: ""; position: absolute; inset: 0 0 55% 0; border-radius: inherit; background: linear-gradient(180deg, var(--lg-sheen), transparent); pointer-events: none; }
+.medal { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #F6D77A, #C9962B); color: #4A3300; box-shadow: 0 6px 16px -8px rgba(201, 150, 43, 0.7); }
+.medal svg { width: 24px; height: 24px; }
+.award-text { display: grid; gap: 4px; min-width: 0; }
+.award-text .award-tag { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #B8860B; }
+.award h3 { font-family: var(--display); font-size: var(--step-1); font-weight: 700; letter-spacing: 0.02em; }
+.award-text p { font-size: var(--step--1); color: var(--ink-soft); line-height: 1.5; }
+.award-text .award-meta { justify-self: start; margin-top: 4px; font-size: 0.75rem; font-weight: 600; color: var(--ink); line-height: 1.4; padding: 6px 10px; border-radius: 8px; background: rgba(201, 150, 43, 0.14); border: 1px solid rgba(201, 150, 43, 0.35); }
+.teaser { display: grid; gap: 14px; padding: 18px; border-radius: 20px; background: var(--surface); border: 1px solid var(--glass-line); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+.teaser p { color: var(--ink-soft); font-size: var(--step--1); }
+.teaser .btn.primary { justify-self: start; grid-column: auto; padding-inline: 22px; }
+.mini-strip { display: grid; grid-template-columns: repeat(16, minmax(0, 1fr)); gap: 3px; padding: 7px 8px; border-radius: 8px; background: #1B1C1D; }
+.mini-strip i { aspect-ratio: 3 / 2; border-radius: 2px; background: #2A2B2D; }
+.mini-strip i:nth-child(-n+5) { background: linear-gradient(135deg, var(--navy), var(--amber)); }
+.mini-strip i:nth-child(2) { background: linear-gradient(135deg, var(--lime), var(--navy)); }
+.mini-strip i:nth-child(4) { background: linear-gradient(135deg, var(--amber), var(--navy-deep)); }
+#challenge-panel { display: grid; gap: 18px; }
 .hello { font-size: var(--step-0); color: var(--ink-soft); margin-bottom: -4px; }
 .status { display: inline-flex; align-items: center; gap: 8px; justify-self: start; font-size: var(--step--1); color: var(--ink); background: var(--surface); border: 1px solid var(--glass-line); border-radius: 999px; padding: 6px 12px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 .status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 0 rgba(216, 244, 79, 0.6); animation: live 2s ease-out infinite; }
@@ -307,6 +342,7 @@ section { scroll-margin-top: 12px; }
 .closer { display: grid; gap: 14px; padding: 24px 20px; border-radius: 20px; background: radial-gradient(120% 100% at 0% 0%, rgba(216, 244, 79, 0.18), transparent 60%), radial-gradient(120% 100% at 100% 100%, rgba(226, 96, 58, 0.16), transparent 60%), var(--surface); border: 1px solid var(--glass-line); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
 .closer p { color: var(--ink-soft); max-width: 34em; }
 .closer .actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 720px) { .closer .actions { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr); } .closer .actions .btn.primary { grid-column: auto; } }
 @supports (animation-timeline: view()) {
   section > .wrap { animation: rise linear both; animation-timeline: view(); animation-range: entry 0% entry 40%; }
   @keyframes rise { from { opacity: 0.6; transform: translateY(14px); } to { opacity: 1; transform: none; } }
@@ -399,6 +435,7 @@ section { scroll-margin-top: 12px; }
         <li class="offer" data-id="pedagogy">
           <h3>Creative thinking in art and design education</h3><span class="fit" hidden>Fits you</span>
           <p>Joint research on how creativity is taught, practised and assessed across art and design programmes.</p>
+          <p class="subjects">I teach: Creative Thinking <span aria-hidden="true">·</span> Brand Identity <span aria-hidden="true">·</span> Publication Design</p>
         </li>
         <li class="offer" data-id="heritage">
           <h3>AI, traditional crafts and cultural heritage across Southeast Asia</h3><span class="fit" hidden>Fits you</span>
@@ -414,8 +451,10 @@ section { scroll-margin-top: 12px; }
         </li>
       </ul>
       <aside class="bridge">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18h18"/><path d="M5 18v-5a7 7 0 0 1 14 0v5"/><path d="M9 18v-3M15 18v-3M12 18v-4"/></svg>
-        <p>Every meaningful partnership begins with a conversation. Where our shared interests point towards something more lasting, I would be glad to serve as your bridge to Management and Science University, supporting institutional collaborations such as Memoranda of Understanding, joint research grants and student mobility.</p>
+        <span class="bridge-kicker">Beyond a single project</span>
+        <p class="bridge-lead">Every meaningful partnership begins with a conversation.</p>
+        <p class="bridge-body">Where our shared interests point towards something more lasting, I would be glad to serve as your bridge to Management and Science University, supporting institutional collaborations such as:</p>
+        <ul class="bridge-tags"><li>Memoranda of Understanding</li><li>Joint research grants</li><li>Student mobility</li></ul>
       </aside>
       <div class="cta-row">
         <a class="btn primary" id="role-cta" href="mailto:mohammad_aaris@msu.edu.my?subject=Hello%20from%20ADADA%202026">Get in touch</a>
@@ -427,6 +466,12 @@ section { scroll-margin-top: 12px; }
     <div class="wrap">
       <p class="eyebrow">Got 20 seconds? Try this</p>
       <h2 id="challenge-h">The 16-Shot Challenge</h2>
+      <div class="teaser">
+        <div class="mini-strip" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <p>Try the creative constraint from my ADADA talk. Pick a prompt, imagine 16 frames. It takes about 20 seconds.</p>
+        <button class="btn primary" type="button" id="open-challenge" aria-expanded="false" aria-controls="challenge-panel">Start the challenge</button>
+      </div>
+      <div id="challenge-panel" hidden>
       <p class="lede">In my Creative Thinking class, students shoot with Once, an app that limits them to 16 shots. Fewer chances means more deliberate choices. Pick a constraint and imagine your 16 frames.</p>
 
       <div id="deal-view">
@@ -457,6 +502,7 @@ section { scroll-margin-top: 12px; }
           </div>
         </div>
       </div>
+      </div>
     </div>
   </section>
 
@@ -476,7 +522,7 @@ section { scroll-margin-top: 12px; }
       <p class="eyebrow">What I'm working on</p>
       <div class="block">
         <h2 id="research-h">Sustaining NFT practice in the Malaysian creative industry</h2>
-        <p class="label">PhD research · Universiti Teknologi MARA</p>
+        <p class="label">PhD Research · Universiti Teknologi MARA</p>
         <p>This study examines Malaysia's NFT ecosystem after the market downturn: who takes part, why creators adopt or withdraw, and what conditions support long-term use. The outcome is a sustainability framework validated by expert review.</p>
       </div>
     </div>
@@ -500,6 +546,25 @@ section { scroll-margin-top: 12px; }
           <span class="venue">IEEE 13th Symposium on Computer Applications &amp; Industrial Electronics (ISCAIE) · <span class="year">2023</span></span>
         </li>
       </ul>
+      <p class="more-label">Recognition</p>
+      <div class="award-wrap">
+      <article class="award">
+        <span class="medal" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="14" r="6"/><path d="M8.5 9.2 6 3h4l2 4 2-4h4l-2.5 6.2"/><path d="m12 11.5.9 1.8 2 .3-1.45 1.4.35 2-1.8-.95-1.8.95.35-2-1.45-1.4 2-.3z"/></svg></span>
+        <div class="award-text">
+          <p class="award-tag">Gold Award</p>
+          <h3>SARANG</h3>
+          <p>A concept platform designed to help local cultural artisans preserve and empower their craft using AI and NFTs.</p>
+          <p class="award-meta">i-LEdHS 2026 Innovation, Invention &amp; Design Exhibition</p>
+        </div>
+      </article>
+      </div>
+      <p class="more-label">See my full record on</p>
+      <div class="profiles">
+        <a class="profile" style="--pc: #4285F4" href="https://scholar.google.com/citations?user=yhBEoUkAAAAJ" target="_blank" rel="noopener"><b>Google Scholar</b></a>
+        <a class="profile" style="--pc: #E9711C" href="https://www.scopus.com/authid/detail.uri?authorId=58494493400" target="_blank" rel="noopener"><b>Scopus</b></a>
+        <a class="profile" style="--pc: #7B4FD6" href="https://www.webofscience.com/wos/author/record/NSU-5716-2025" target="_blank" rel="noopener"><b>Web of Science</b></a>
+        <a class="profile" style="--pc: #8DB52E" href="https://orcid.org/0009-0009-2001-2803" target="_blank" rel="noopener"><b>ORCID</b></a>
+      </div>
     </div>
   </section>
 
@@ -517,17 +582,6 @@ section { scroll-margin-top: 12px; }
     </div>
   </section>
 
-  <section id="profiles" aria-labelledby="profiles-h">
-    <div class="wrap">
-      <p class="eyebrow" id="profiles-h">Research profiles</p>
-      <div class="profiles">
-        <a class="profile" href="https://scholar.google.com/citations?user=yhBEoUkAAAAJ" target="_blank" rel="noopener"><b>Google Scholar</b></a>
-        <a class="profile" href="https://www.scopus.com/authid/detail.uri?authorId=58494493400" target="_blank" rel="noopener"><b>Scopus</b></a>
-        <a class="profile" href="https://www.webofscience.com/wos/author/record/NSU-5716-2025" target="_blank" rel="noopener"><b>Web of Science</b></a>
-        <a class="profile" href="https://orcid.org/0009-0009-2001-2803" target="_blank" rel="noopener"><b>ORCID</b></a>
-      </div>
-    </div>
-  </section>
 </main>
 
 <footer>
@@ -697,6 +751,17 @@ section { scroll-margin-top: 12px; }
   document.getElementById("redeal").addEventListener("click", deal);
   deal();
 
+
+  /* Collapsible 16-Shot panel */
+  var openBtn = document.getElementById("open-challenge"), panel = document.getElementById("challenge-panel"), teaserEl = document.querySelector(".teaser");
+  function openChallenge() {
+    if (!panel.hidden) return;
+    panel.hidden = false; teaserEl.hidden = true; openBtn.setAttribute("aria-expanded", "true");
+    deal();
+  }
+  openBtn.addEventListener("click", openChallenge);
+  document.querySelectorAll('a[href="#challenge"]').forEach(function (a) { a.addEventListener("click", openChallenge); });
+
   /* Light / dark toggle */
   var root = document.documentElement, tBtn = document.getElementById("theme-toggle"), tLabel = document.getElementById("theme-label");
   var mq = window.matchMedia("(prefers-color-scheme: dark)");
@@ -730,5 +795,6 @@ section { scroll-margin-top: 12px; }
 })();
 </script>
 
+<script data-goatcounter="https://aarisamirza.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>
