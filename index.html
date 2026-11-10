@@ -333,7 +333,16 @@ footer .wrap { padding-block: 28px 40px; font-size: var(--step--1); color: var(-
 .cam-note .linkish { font-size: 0.75rem; }
 .shutter.busy { opacity: 0.7; pointer-events: none; }
 .roll-actions .btn.primary { grid-column: auto; }
+#roll-actions { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+#roll-actions .shutter { grid-column: 1 / -1; }
+.nudge { flex-basis: 100%; padding: 8px 12px; border-radius: 12px; background: var(--cuff-tint); color: var(--ink); font-size: 0.75rem; }
+.nudge .linkish { font-weight: 600; }
+.teaser .resume { justify-self: start; }
+.lede .hl { background: linear-gradient(transparent 58%, rgba(216, 244, 79, 0.75) 58%); color: inherit; font-weight: 700; padding: 0 2px; }
+:root.is-dark .lede .hl { background: linear-gradient(transparent 62%, rgba(216, 244, 79, 0.32) 62%); }
+.lede-note strong { color: var(--ink); }
 .done .roll-actions { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+.lede-note { display: inline-block; margin-top: 8px; }
 .hello { font-size: var(--step-0); color: var(--ink-soft); margin-bottom: -4px; }
 .status { display: inline-flex; align-items: center; gap: 8px; justify-self: start; font-size: var(--step--1); color: var(--ink); background: var(--surface); border: 1px solid var(--glass-line); border-radius: 999px; padding: 6px 12px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 .status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 0 rgba(216, 244, 79, 0.6); animation: live 2s ease-out infinite; }
@@ -487,9 +496,10 @@ section { scroll-margin-top: 12px; }
         <div class="mini-strip" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
         <p>Try the creative constraint from my ADADA talk. Pick a prompt and shoot 16 frames with your phone camera.</p>
         <button class="btn primary" type="button" id="open-challenge" aria-expanded="false" aria-controls="challenge-panel">Start the challenge</button>
+        <button class="btn resume" type="button" id="resume-roll" hidden></button>
       </div>
       <div id="challenge-panel" hidden>
-      <p class="lede">In my Creative Thinking class, students shoot with Once, an app that limits them to 16 shots. Fewer chances means more deliberate choices. Pick a constraint, then shoot 16 photos with your phone camera. When you finish, you can save your shots and a contact sheet of your roll to your phone.</p>
+      <p class="lede">In my Creative Thinking class, students shoot on Once, an app that gives them <mark class="hl">just 16 frames</mark>. No retakes, no endless scrolling, only choices. Now it's your turn: pick a constraint, slow down, and <mark class="hl">make every frame count</mark>.<br><span class="lede-note">Finish the roll and <strong>keep it all</strong>: your 16 shots plus a contact sheet of your roll, saved straight to your phone.</span></p>
 
       <div id="deal-view">
         <div class="deal" id="deal" aria-live="polite"></div>
@@ -508,10 +518,12 @@ section { scroll-margin-top: 12px; }
         <div class="sheet" id="sheet" aria-label="Contact sheet of 16 frames"></div>
         <div class="roll-actions" id="roll-actions">
           <button class="btn primary shutter" type="button" id="shoot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg>Take a shot</button>
+          <button class="btn" type="button" id="pick">From gallery</button>
           <button class="btn" type="button" id="restart">New card</button>
         </div>
         <input type="file" id="cam" accept="image/*" capture="environment" hidden>
-        <p class="cam-note" id="cam-note">Photos stay on your phone and are never uploaded. You can save them all when the roll is done. <button class="linkish" type="button" id="imagine">No camera? Imagine this shot</button></p>
+        <input type="file" id="gallery" accept="image/*" multiple hidden>
+        <p class="cam-note" id="cam-note">Photos stay on your phone and are never uploaded. Your progress is kept if you step away. <button class="linkish" type="button" id="imagine">No camera? Imagine this shot</button><span class="nudge" id="nudge" hidden><span id="nudge-text"></span> <button class="linkish" type="button" id="fill-rest"></button></span></p>
         <div class="done" id="done" hidden>
           <strong>Roll finished. Every frame was a choice.</strong>
           <p>Scarcity forces choices. That's the idea behind my ADADA 2026 talk, "<a href="#talk">The 16-Shot Constraint</a>." Keep your roll as one contact sheet, or save each photo at full quality.</p>
@@ -724,7 +736,7 @@ section { scroll-margin-top: 12px; }
     });
   }
   function startRoll(idx) {
-    shots = 0; roll = []; rollPrompt = PROMPTS[idx][0]; rollSkill = PROMPTS[idx][1]; document.getElementById("cam-note").hidden = false;
+    shots = 0; roll = []; rollIdx = idx; document.getElementById("nudge").hidden = true; rollPrompt = PROMPTS[idx][0]; rollSkill = PROMPTS[idx][1]; document.getElementById("cam-note").hidden = false;
     document.getElementById("roll-q").textContent = PROMPTS[idx][0];
     document.getElementById("roll-skill").textContent = PROMPTS[idx][1];
     sheet.innerHTML = "";
@@ -742,25 +754,27 @@ section { scroll-margin-top: 12px; }
   }
   var cam = document.getElementById("cam"), imagineBtn = document.getElementById("imagine");
   var GP = [["#6257B9","#E2603A"],["#C8DE3E","#6257B9"],["#3B3187","#E2603A"],["#EAE8E3","#6257B9"],["#E2603A","#F1EFEA"],["#4F44A6","#C8DE3E"],["#3B3187","#EAE8E3"],["#1F1D1E","#E2603A"]];
-  var roll = [], rollPrompt = "", rollSkill = "";
-  function fillFrame(photoUrl, original) {
+  var roll = [], rollPrompt = "", rollSkill = "", rollIdx = -1;
+  function fillFrame(photoUrl, original, preset, quiet) {
     if (shots >= TOTAL) return;
     var frames = sheet.querySelectorAll(".frame"), fr = frames[shots];
     if (photoUrl) {
       fr.style.setProperty("--shot", 'url("' + photoUrl + '") center / cover no-repeat');
       roll[shots] = { photo: photoUrl, file: original || null };
     } else {
-      var pp = GP[Math.floor(Math.random() * GP.length)], ang = Math.floor(Math.random() * 360);
+      var pp = preset ? preset.colors : GP[Math.floor(Math.random() * GP.length)], ang = preset ? preset.ang : Math.floor(Math.random() * 360);
       fr.style.setProperty("--shot", "linear-gradient(" + ang + "deg, " + pp[0] + ", " + pp[1] + ")");
       roll[shots] = { colors: pp, ang: ang };
     }
     fr.classList.remove("next"); fr.classList.add("shot");
-    var fl = sheet.querySelector(".flash"); if (!fl) { fl = document.createElement("div"); fl.className = "flash"; sheet.appendChild(fl); }
-    fl.classList.remove("go"); void fl.offsetWidth; fl.classList.add("go");
-    try { if (navigator.vibrate) navigator.vibrate(12); } catch (e) {}
+    if (!quiet) {
+      var fl = sheet.querySelector(".flash"); if (!fl) { fl = document.createElement("div"); fl.className = "flash"; sheet.appendChild(fl); }
+      fl.classList.remove("go"); void fl.offsetWidth; fl.classList.add("go");
+      try { if (navigator.vibrate) navigator.vibrate(12); } catch (e) {}
+    }
     shots++; if (shots < TOTAL) frames[shots].classList.add("next");
-    updateCount();
-    if (shots === TOTAL) { rollActions.hidden = true; document.getElementById("cam-note").hidden = true; document.getElementById("save-photos").hidden = !roll.some(function (r) { return r && r.file; }); doneEl.hidden = false; confetti(); }
+    updateCount(); updateNudge(); if (!quiet) persist();
+    if (shots === TOTAL) { rollActions.hidden = true; document.getElementById("cam-note").hidden = true; document.getElementById("save-photos").hidden = !roll.some(function (r) { return r && r.file; }); doneEl.hidden = false; if (!quiet) confetti(); }
   }
   function shrink(file) {
     return new Promise(function (resolve, reject) {
@@ -783,6 +797,76 @@ section { scroll-margin-top: 12px; }
       .then(function () { shootBtn.classList.remove("busy"); });
   });
   imagineBtn.addEventListener("click", function () { fillFrame(null); });
+  /* Pick several photos at once from the gallery */
+  var gallery = document.getElementById("gallery"), pickBtn = document.getElementById("pick");
+  pickBtn.addEventListener("click", function () { if (shots < TOTAL) { gallery.value = ""; gallery.click(); } });
+  gallery.addEventListener("change", function () {
+    var files = Array.prototype.slice.call(gallery.files || []); if (!files.length) return;
+    var room = TOTAL - shots, use = files.slice(0, room);
+    if (files.length > room) say("Only " + room + (room === 1 ? " frame was" : " frames were") + " left, so the first " + room + " went on your roll.");
+    pickBtn.classList.add("busy");
+    use.reduce(function (p, f) {
+      return p.then(function () { return shrink(f).then(function (u) { fillFrame(u, f); }, function () {}); });
+    }, Promise.resolve()).then(function () { pickBtn.classList.remove("busy"); });
+  });
+  /* Finishing nudge: offer to imagine the rest once the roll is half done */
+  var nudge = document.getElementById("nudge"), fillRest = document.getElementById("fill-rest");
+  function updateNudge() {
+    var left = TOTAL - shots;
+    nudge.hidden = !(shots >= 8 && left > 0);
+    if (!nudge.hidden) {
+      document.getElementById("nudge-text").textContent = left + (left === 1 ? " frame" : " frames") + " to go. Short on time?";
+      fillRest.textContent = left === 1 ? "Imagine the last one" : "Imagine the remaining " + left;
+    }
+  }
+  fillRest.addEventListener("click", function () {
+    var n = TOTAL - shots;
+    for (var i = 0; i < n; i++) setTimeout(function () { fillFrame(null); }, i * 90);
+  });
+  /* Keep a half-finished roll on this phone (IndexedDB), so leaving or reloading does not lose it */
+  var dbP = null;
+  function idb() {
+    if (!dbP) dbP = new Promise(function (res) {
+      try { var r = indexedDB.open("aa-16shot", 1); r.onupgradeneeded = function () { r.result.createObjectStore("s"); }; r.onsuccess = function () { res(r.result); }; r.onerror = function () { res(null); }; }
+      catch (e) { res(null); }
+    });
+    return dbP;
+  }
+  function writeRoll(val) {
+    return idb().then(function (db) {
+      if (!db) return;
+      return new Promise(function (res) {
+        function attempt(v, retry) {
+          try {
+            var tx = db.transaction("s", "readwrite"), st = tx.objectStore("s");
+            if (v === null) st.delete("roll"); else st.put(v, "roll");
+            tx.oncomplete = function () { res(); };
+            tx.onerror = tx.onabort = function () { if (retry) attempt(retry, null); else res(); };
+          } catch (e) { if (retry) attempt(retry, null); else res(); }
+        }
+        var lite = v0(val);
+        attempt(val, lite);
+      });
+    });
+  }
+  function v0(val) { /* fallback without original files, for browsers that cannot store them */
+    if (!val) return null;
+    return { idx: val.idx, frames: val.frames.map(function (f) { return f.photo ? { photo: f.photo } : f; }) };
+  }
+  function persist() {
+    if (rollIdx < 0) return;
+    writeRoll({ idx: rollIdx, frames: roll.slice(0, shots).map(function (r) { return r.photo ? { photo: r.photo, file: r.file || null } : { colors: r.colors, ang: r.ang }; }) });
+  }
+  function clearSaved() { writeRoll(null); var rb = document.getElementById("resume-roll"); if (rb) rb.hidden = true; }
+  function readRoll() {
+    return idb().then(function (db) {
+      if (!db) return null;
+      return new Promise(function (res) {
+        try { var q = db.transaction("s").objectStore("s").get("roll"); q.onsuccess = function () { res(q.result || null); }; q.onerror = function () { res(null); }; }
+        catch (e) { res(null); }
+      });
+    });
+  }
   function loadImg(src) { return new Promise(function (res) { var i = new Image(); i.onload = function () { res(i); }; i.onerror = function () { res(null); }; i.src = src; }); }
   function buildSheet() {
     var W = 1600, pad = 72, gap = 14, cols = 4, fw = (W - pad * 2 - gap * (cols - 1)) / cols, fh = fw * 2 / 3;
@@ -907,7 +991,7 @@ section { scroll-margin-top: 12px; }
       document.body.appendChild(s); setTimeout(function (el) { el.remove(); }, 3000, s);
     }
   }
-  function backToDeal() { rollView.hidden = true; dealView.hidden = false; deal(); }
+  function backToDeal() { clearSaved(); rollIdx = -1; rollView.hidden = true; dealView.hidden = false; deal(); }
   document.getElementById("restart").addEventListener("click", backToDeal);
   document.getElementById("again").addEventListener("click", backToDeal);
   document.getElementById("redeal").addEventListener("click", deal);
@@ -922,6 +1006,21 @@ section { scroll-margin-top: 12px; }
     deal();
   }
   openBtn.addEventListener("click", openChallenge);
+  var resumeBtn = document.getElementById("resume-roll"), saved = null;
+  readRoll().then(function (v) {
+    if (!v || !v.frames || !v.frames.length || !PROMPTS[v.idx]) return;
+    saved = v; var n = v.frames.length;
+    resumeBtn.textContent = n >= TOTAL ? "See your finished roll" : "Continue your roll (" + n + " of " + TOTAL + ")";
+    resumeBtn.hidden = false;
+  });
+  resumeBtn.addEventListener("click", function () {
+    if (!saved) return;
+    openChallenge(); startRoll(saved.idx);
+    saved.frames.slice(0, TOTAL).forEach(function (f) {
+      if (f.photo) fillFrame(f.photo, f.file || null, null, true); else fillFrame(null, null, f, true);
+    });
+    resumeBtn.hidden = true; saved = null;
+  });
   document.querySelectorAll('a[href="#challenge"]').forEach(function (a) { a.addEventListener("click", openChallenge); });
 
   /* Light / dark toggle */
