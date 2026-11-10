@@ -333,6 +333,7 @@ footer .wrap { padding-block: 28px 40px; font-size: var(--step--1); color: var(-
 .cam-note .linkish { font-size: 0.75rem; }
 .shutter.busy { opacity: 0.7; pointer-events: none; }
 .roll-actions .btn.primary { grid-column: auto; }
+.done .roll-actions { grid-template-columns: minmax(0, 1fr); gap: 8px; }
 .hello { font-size: var(--step-0); color: var(--ink-soft); margin-bottom: -4px; }
 .status { display: inline-flex; align-items: center; gap: 8px; justify-self: start; font-size: var(--step--1); color: var(--ink); background: var(--surface); border: 1px solid var(--glass-line); border-radius: 999px; padding: 6px 12px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 .status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 0 rgba(216, 244, 79, 0.6); animation: live 2s ease-out infinite; }
@@ -513,9 +514,12 @@ section { scroll-margin-top: 12px; }
         <p class="cam-note" id="cam-note">Photos stay on your phone. Nothing is uploaded. <button class="linkish" type="button" id="imagine">No camera? Imagine this shot</button></p>
         <div class="done" id="done" hidden>
           <strong>Roll finished. Every frame was a choice.</strong>
-          <p>Scarcity forces choices. That's the idea behind my ADADA 2026 talk, "<a href="#talk">The 16-Shot Constraint</a>." Save your roll as a single contact sheet and share it.</p>
+          <p>Scarcity forces choices. That's the idea behind my ADADA 2026 talk, "<a href="#talk">The 16-Shot Constraint</a>." Keep your roll as one contact sheet, or save each photo at full quality.</p>
           <div class="roll-actions">
             <button class="btn primary" type="button" id="save-sheet">Save my contact sheet</button>
+            <button class="btn" type="button" id="save-photos">Save my photos</button>
+          </div>
+          <div class="roll-actions">
             <button class="btn" type="button" id="again">Try another</button>
           </div>
         </div>
@@ -739,12 +743,12 @@ section { scroll-margin-top: 12px; }
   var cam = document.getElementById("cam"), imagineBtn = document.getElementById("imagine");
   var GP = [["#6257B9","#E2603A"],["#C8DE3E","#6257B9"],["#3B3187","#E2603A"],["#EAE8E3","#6257B9"],["#E2603A","#F1EFEA"],["#4F44A6","#C8DE3E"],["#3B3187","#EAE8E3"],["#1F1D1E","#E2603A"]];
   var roll = [], rollPrompt = "";
-  function fillFrame(photoUrl) {
+  function fillFrame(photoUrl, original) {
     if (shots >= TOTAL) return;
     var frames = sheet.querySelectorAll(".frame"), fr = frames[shots];
     if (photoUrl) {
       fr.style.setProperty("--shot", 'url("' + photoUrl + '") center / cover no-repeat');
-      roll[shots] = { photo: photoUrl };
+      roll[shots] = { photo: photoUrl, file: original || null };
     } else {
       var pp = GP[Math.floor(Math.random() * GP.length)], ang = Math.floor(Math.random() * 360);
       fr.style.setProperty("--shot", "linear-gradient(" + ang + "deg, " + pp[0] + ", " + pp[1] + ")");
@@ -756,7 +760,7 @@ section { scroll-margin-top: 12px; }
     try { if (navigator.vibrate) navigator.vibrate(12); } catch (e) {}
     shots++; if (shots < TOTAL) frames[shots].classList.add("next");
     updateCount();
-    if (shots === TOTAL) { rollActions.hidden = true; document.getElementById("cam-note").hidden = true; doneEl.hidden = false; confetti(); }
+    if (shots === TOTAL) { rollActions.hidden = true; document.getElementById("cam-note").hidden = true; document.getElementById("save-photos").hidden = !roll.some(function (r) { return r && r.file; }); doneEl.hidden = false; confetti(); }
   }
   function shrink(file) {
     return new Promise(function (resolve, reject) {
@@ -775,7 +779,7 @@ section { scroll-margin-top: 12px; }
   cam.addEventListener("change", function () {
     var file = cam.files && cam.files[0]; if (!file) return;
     shootBtn.classList.add("busy");
-    shrink(file).then(function (u) { fillFrame(u); }, function () { say("That photo couldn't be read. Try again."); })
+    shrink(file).then(function (u) { fillFrame(u, file); }, function () { say("That photo couldn't be read. Try again."); })
       .then(function () { shootBtn.classList.remove("busy"); });
   });
   imagineBtn.addEventListener("click", function () { fillFrame(null); });
@@ -829,6 +833,27 @@ section { scroll-margin-top: 12px; }
         document.body.appendChild(a); a.click(); a.remove(); say("Contact sheet saved"); done();
       }
     }, function () { btn.disabled = false; btn.textContent = "Save my contact sheet"; say("Couldn't create the image. Please try again."); });
+  });
+
+  document.getElementById("save-photos").addEventListener("click", function () {
+    var btn = this, files = [];
+    roll.forEach(function (r, i) {
+      if (r && r.file) {
+        var ext = (r.file.type.split("/")[1] || "jpg").replace("jpeg", "jpg");
+        files.push(new File([r.file], "16-shot-" + (i < 9 ? "0" : "") + (i + 1) + "." + ext, { type: r.file.type || "image/jpeg" }));
+      }
+    });
+    if (!files.length) { say("No camera photos in this roll to save."); return; }
+    if (navigator.canShare && navigator.canShare({ files: files })) {
+      navigator.share({ files: files, title: "My 16-Shot photos" }).catch(function () {});
+      return;
+    }
+    btn.disabled = true; var n = 0;
+    (function next() {
+      if (n >= files.length) { btn.disabled = false; say(files.length + " photos saved"); return; }
+      var a = document.createElement("a"); a.href = URL.createObjectURL(files[n]); a.download = files[n].name;
+      document.body.appendChild(a); a.click(); a.remove(); n++; setTimeout(next, 350);
+    })();
   });
   function confetti() {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
